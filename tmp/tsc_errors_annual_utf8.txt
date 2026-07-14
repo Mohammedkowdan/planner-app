@@ -1,0 +1,3 @@
+﻿app/api/annual-reports/import/route.ts(31,7): error TS2322: Type '{ fileName: string; status: string; summary: any; organizationId: string; organizationName: string; departmentId: string; departmentName: string; importedByUserId: string; annualReport: { create: { ...; }; }; }' is not assignable to type '(Without<AnnualReportImportCreateInput, AnnualReportImportUncheckedCreateInput> & AnnualReportImportUncheckedCreateInput) | (Without<...> & AnnualReportImportCreateInput)'.
+  Types of property 'annualReport' are incompatible.
+    Type '{ create: { title: string; reportYear: number; organizationId: string; organizationName: string; departmentId: string; departmentName: string; }; }' is not assignable to type 'undefined'.

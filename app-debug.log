@@ -1,0 +1,15 @@
+2026-02-01T13:02:08.497Z - createProgramWallet started: {"name":"education ","description":"new","mainGoalId":"cml3qlivp000630vbbbp130xn"}
+2026-02-01T13:02:08.499Z - Session: {"userId":"cml3qlia4000030vbgjkzr28n","role":"ADMIN","orgId":"org-1","deptId":"dept-8","expires":"2026-02-02T12:50:02.161Z","iat":1769950202,"exp":1770036602}
+2026-02-01T13:02:08.501Z - DB Error: Cannot read properties of undefined (reading 'create')
+2026-02-01T13:02:10.763Z - createProgramWallet started: {"name":"education ","description":"new","mainGoalId":"cml3qlivp000630vbbbp130xn"}
+2026-02-01T13:02:10.765Z - Session: {"userId":"cml3qlia4000030vbgjkzr28n","role":"ADMIN","orgId":"org-1","deptId":"dept-8","expires":"2026-02-02T12:50:02.161Z","iat":1769950202,"exp":1770036602}
+2026-02-01T13:02:10.770Z - DB Error: Cannot read properties of undefined (reading 'create')
+2026-02-01T13:02:11.886Z - createProgramWallet started: {"name":"education ","description":"new","mainGoalId":"cml3qlivp000630vbbbp130xn"}
+2026-02-01T13:02:11.888Z - Session: {"userId":"cml3qlia4000030vbgjkzr28n","role":"ADMIN","orgId":"org-1","deptId":"dept-8","expires":"2026-02-02T12:50:02.161Z","iat":1769950202,"exp":1770036602}
+2026-02-01T13:02:11.889Z - DB Error: Cannot read properties of undefined (reading 'create')
+2026-02-01T13:03:30.423Z - createProgramWallet started: {"name":"education ","description":"new","mainGoalId":"cml3qlivp000630vbbbp130xn"}
+2026-02-01T13:03:30.431Z - Session: {"userId":"cml3qlia4000030vbgjkzr28n","role":"ADMIN","orgId":"org-1","deptId":"dept-8","expires":"2026-02-02T12:50:02.161Z","iat":1769950202,"exp":1770036602}
+2026-02-01T13:03:30.510Z - Wallet created: cml3r4s5u00009svbgax7dmzh
+2026-02-01T13:11:11.682Z - createProgramWallet started: {"name":"الصحة","description":"","mainGoalId":"cml3qlivp000630vbbbp130xn"}
+2026-02-01T13:11:11.685Z - Session: {"userId":"cml3qlia4000030vbgjkzr28n","role":"ADMIN","orgId":"org-1","deptId":"dept-8","expires":"2026-02-02T12:50:02.161Z","iat":1769950202,"exp":1770036602}
+2026-02-01T13:11:11.738Z - Wallet created: cml3reo1z00029svbp38jwxoc

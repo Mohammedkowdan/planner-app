@@ -1,5 +1,11 @@
 "use client"
 
+/**
+ * @deprecated This hook is legacy and was used for prototype data from localStorage.
+ * All new features must use the Prisma/PostgreSQL database via Server Actions or API routes.
+ */
+console.warn("Using legacy use-data.ts hook - please migrate to database-backed actions");
+
 import { useState, useEffect } from "react"
 import {
   getPlanningYears,

@@ -1,0 +1,486 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                  String               @id @default(cuid())
+  email               String               @unique
+  password            String
+  name                String
+  role                Role                 @default(USER)
+  organizationId      String
+  organizationName    String
+  departmentId        String
+  departmentName      String
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  image               String?
+  assignedActivities  Activity[]
+  annualReportImports AnnualReportImport[]
+  calendarEvents      CalendarEvent[]
+  notifications       Notification[]
+  recentActivities    RecentActivity[]
+
+  @@index([organizationId, departmentId])
+}
+
+model PlanningYear {
+  id               String      @id @default(cuid())
+  name             String
+  year             Int
+  startDate        DateTime
+  endDate          DateTime
+  status           Status      @default(ACTIVE)
+  organizationId   String
+  organizationName String
+  departmentId     String
+  departmentName   String
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  activities       Activity[]
+  indicators       Indicator[]
+  mainGoals        MainGoal[]
+  programs         Program[]
+
+  @@index([organizationId, departmentId])
+}
+
+model Indicator {
+  id               String         @id @default(cuid())
+  name             String
+  description      String?
+  category         String
+  baselineValue    Float
+  targetValue      Float
+  unit             String
+  q1Target         Float          @default(0)
+  q1Actual         Float          @default(0)
+  q2Target         Float          @default(0)
+  q2Actual         Float          @default(0)
+  q3Target         Float          @default(0)
+  q3Actual         Float          @default(0)
+  q4Target         Float          @default(0)
+  q4Actual         Float          @default(0)
+  status           ProgressStatus @default(ON_TRACK)
+  progress         Float          @default(0)
+  yearId           String
+  organizationId   String
+  organizationName String
+  departmentId     String
+  departmentName   String
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  mainGoalId       String?
+  subGoalId        String?
+  mainGoal         MainGoal?      @relation(fields: [mainGoalId], references: [id])
+  subGoal          SubGoal?       @relation(fields: [subGoalId], references: [id])
+  year             PlanningYear   @relation(fields: [yearId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, departmentId])
+}
+
+model MainGoal {
+  id               String          @id @default(cuid())
+  name             String
+  description      String?
+  organizationId   String
+  organizationName String
+  departmentId     String
+  departmentName   String
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  yearId           String?
+  indicators       Indicator[]
+  subGoals         SubGoal[]
+  year             PlanningYear?   @relation(fields: [yearId], references: [id], onDelete: Cascade)
+  programWallets   ProgramWallet[]
+  projectAchievements ProjectAchievement[]
+
+  @@index([organizationId, departmentId])
+}
+
+model SubGoal {
+  id               String       @id @default(cuid())
+  name             String
+  description      String?
+  mainGoalId       String
+  yearId           String?
+  organizationId   String
+  organizationName String
+  departmentId     String
+  departmentName   String
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  mainGoal         MainGoal     @relation(fields: [mainGoalId], references: [id], onDelete: Cascade)
+  indicators       Indicator[]
+  projectAchievements ProjectAchievement[]
+
+  @@index([organizationId, departmentId])
+  @@index([mainGoalId])
+}
+
+model Program {
+  id               String         @id @default(cuid())
+  name             String
+  description      String?
+  budget           Decimal        @db.Decimal(15, 2)
+  spent            Decimal        @default(0) @db.Decimal(15, 2)
+  startDate        DateTime
+  endDate          DateTime
+  status           ProgressStatus @default(ON_TRACK)
+  progress         Float          @default(0)
+  yearId           String
+  organizationId   String
+  organizationName String
+  departmentId     String
+  departmentName   String
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  programWalletId  String?
+  initiatives      Json           @default("[]")
+  programWallet    ProgramWallet? @relation(fields: [programWalletId], references: [id])
+  year             PlanningYear   @relation(fields: [yearId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, departmentId])
+}
+
+model Activity {
+  id               String                 @id @default(cuid())
+  name             String
+  description      String?
+  startDate        DateTime
+  endDate          DateTime
+  duration         Int
+  project          String?
+  department       String?
+  status           ProgressStatus         @default(PENDING)
+  color            String?
+  yearId           String
+  organizationId   String
+  organizationName String
+  departmentId     String
+  departmentName   String
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
+  assignedUserId   String?
+  assignedUser     User?                  @relation(fields: [assignedUserId], references: [id])
+  year             PlanningYear           @relation(fields: [yearId], references: [id], onDelete: Cascade)
+  reports          ImplementationReport[]
+
+  @@index([organizationId, departmentId])
+}
+
+model ImplementationReport {
+  id                 String   @id @default(cuid())
+  activityId         String
+  activityName       String
+  implementationDate DateTime
+  men                Int      @default(0)
+  women              Int      @default(0)
+  boys               Int      @default(0)
+  girls              Int      @default(0)
+  plannedBudget      Decimal  @db.Decimal(15, 2)
+  actualBudget       Decimal  @db.Decimal(15, 2)
+  outputs            String?
+  challenges         String?
+  recommendations    String?
+  reportedBy         String
+  organizationId     String
+  organizationName   String
+  departmentId       String
+  departmentName     String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  attachments        Json     @default("[]")
+  activity           Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, departmentId])
+}
+
+model RecentActivity {
+  id          String   @id @default(cuid())
+  userId      String
+  userName    String
+  action      String
+  targetType  String
+  targetTitle String
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      String   @default("INFO")
+  link      String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model CalendarEvent {
+  id               String   @id @default(cuid())
+  title            String
+  description      String?
+  date             DateTime
+  type             String   @default("EVENT")
+  userId           String
+  organizationId   String?
+  organizationName String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ProgramWallet {
+  id               String    @id @default(cuid())
+  name             String
+  description      String?
+  mainGoalId       String
+  organizationId   String
+  organizationName String
+  departmentId     String
+  departmentName   String
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  programs         Program[]
+  mainGoal         MainGoal  @relation(fields: [mainGoalId], references: [id])
+
+  @@index([organizationId, departmentId])
+}
+
+model Sector {
+  id             String                @id @default(cuid())
+  name           String
+  code           String?
+  notes          String?
+  organizationId String
+  departmentId   String
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+  projects       AnnualReportProject[]
+
+  @@unique([name, organizationId, departmentId])
+  @@index([organizationId, departmentId])
+}
+
+model Donor {
+  id             String                @id @default(cuid())
+  name           String
+  contactInfo    String?
+  notes          String?
+  organizationId String
+  departmentId   String
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+  projects       AnnualReportProject[]
+
+  @@unique([name, organizationId, departmentId])
+  @@index([organizationId, departmentId])
+}
+
+model Governorate {
+  id               String            @id @default(cuid())
+  name             String            @unique
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  districts        District[]
+  projectLocations ProjectLocation[]
+}
+
+model District {
+  id               String            @id @default(cuid())
+  name             String
+  governorateId    String
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  governorate      Governorate       @relation(fields: [governorateId], references: [id])
+  projectLocations ProjectLocation[]
+
+  @@unique([governorateId, name])
+}
+
+model AnnualReport {
+  id               String                @id @default(cuid())
+  title            String?
+  reportYear       Int
+  notes            String?
+  organizationId   String
+  organizationName String
+  departmentId     String
+  departmentName   String
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+  imports          AnnualReportImport[]
+  projects         AnnualReportProject[]
+
+  @@index([organizationId, departmentId])
+}
+
+model AnnualReportProject {
+  id               String            @id @default(cuid())
+  sheetNo          Int?
+  projectName      String
+  projectBrief     String?
+  projectOutputs   String?
+  startDate        DateTime?
+  endDate          DateTime?
+  status           String?
+  budgetUsd        Decimal?          @db.Decimal(18, 2)
+  annualReportId   String
+  sectorId         String?
+  donorId          String?
+  organizationId   String
+  organizationName String
+  departmentId     String
+  departmentName   String
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  annualReport     AnnualReport      @relation(fields: [annualReportId], references: [id], onDelete: Cascade)
+  donor            Donor?            @relation(fields: [donorId], references: [id])
+  sector           Sector?           @relation(fields: [sectorId], references: [id])
+  locations        ProjectLocation[]
+
+  @@index([organizationId, departmentId])
+}
+
+model ProjectLocation {
+  id               String              @id @default(cuid())
+  projectId        String
+  governorateId    String
+  districtId       String?
+  familiesCount    Int                 @default(0)
+  boysCount        Int                 @default(0)
+  girlsCount       Int                 @default(0)
+  menCount         Int                 @default(0)
+  womenCount       Int                 @default(0)
+  organizationId   String
+  organizationName String
+  departmentId     String
+  departmentName   String
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  district         District?           @relation(fields: [districtId], references: [id])
+  governorate      Governorate         @relation(fields: [governorateId], references: [id])
+  project          AnnualReportProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, governorateId, districtId])
+  @@index([organizationId, departmentId])
+}
+
+model AnnualReportImport {
+  id               String                    @id @default(cuid())
+  fileName         String
+  status           String
+  summary          Json?
+  annualReportId   String?
+  organizationId   String
+  organizationName String
+  departmentId     String
+  departmentName   String
+  importedByUserId String
+  createdAt        DateTime                  @default(now())
+  updatedAt        DateTime                  @updatedAt
+  annualReport     AnnualReport?             @relation(fields: [annualReportId], references: [id])
+  importedByUser   User                      @relation(fields: [importedByUserId], references: [id])
+  issues           AnnualReportImportIssue[]
+
+  @@index([organizationId, departmentId])
+}
+
+model AnnualReportImportIssue {
+  id         String             @id @default(cuid())
+  importId   String
+  severity   String
+  message    String
+  sheetName  String?
+  rowNumber  Int?
+  columnName String?
+  rawValue   String?
+  createdAt  DateTime           @default(now())
+  import     AnnualReportImport @relation(fields: [importId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  MANAGER
+  USER
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expires   DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+enum Status {
+  ACTIVE
+  DRAFT
+  COMPLETED
+  ARCHIVED
+}
+
+enum ProgressStatus {
+  ON_TRACK    @map("on-track")
+  AT_RISK     @map("at-risk")
+  DELAYED     @map("delayed")
+  COMPLETED   @map("completed")
+  PENDING     @map("pending")
+  IN_PROGRESS @map("in-progress")
+}
+
+model ProjectAchievement {
+  id               String   @id @default(cuid())
+  projectName      String
+  mainGoalId       String
+  subGoalId        String
+  governorate      String
+  familiesCount    Int      @default(0)
+  boysCount        Int      @default(0)
+  girlsCount       Int      @default(0)
+  menCount         Int      @default(0)
+  womenCount       Int      @default(0)
+  budgetUsd        Decimal  @db.Decimal(15, 2)
+  organizationId   String
+  organizationName String
+  departmentId     String
+  departmentName   String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  mainGoal         MainGoal @relation(fields: [mainGoalId], references: [id])
+  subGoal          SubGoal  @relation(fields: [subGoalId], references: [id])
+
+
+  @@index([organizationId, departmentId])
+}
+
+model OrganizationSettings {
+  id                String   @id @default(cuid())
+  organizationId    String
+  departmentId      String
+  
+  reportHeaderText  String?
+  reportFooterText  String?
+  
+  reportHeaderImage String?  @db.Text
+  reportFooterImage String?  @db.Text
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([organizationId, departmentId])
+}

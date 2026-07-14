@@ -1,0 +1,6 @@
+﻿components/programs/programs-client-page.tsx(95,19): error TS2322: Type '{ startDate: string; endDate: string; initiatives: any; status: any; department: string; description: string; id: string; name: string; organizationId: string; organizationName: string; departmentId: string; ... 7 more ...; programWalletId: string | null; }' is not assignable to type 'Program'.
+  Types of property 'budget' are incompatible.
+    Type 'Decimal' is not assignable to type 'number'.
+components/programs/programs-client-page.tsx(119,19): error TS2322: Type '{ startDate: string; endDate: string; initiatives: any; status: any; department: string; description: string; id: string; name: string; organizationId: string; organizationName: string; departmentId: string; ... 7 more ...; programWalletId: string | null; }' is not assignable to type 'Program'.
+  Types of property 'budget' are incompatible.
+    Type 'Decimal' is not assignable to type 'number'.

@@ -1,0 +1,1 @@
+﻿app/annual-reports/[reportId]/page.tsx(8,79): error TS2307: Cannot find module '@/components/ui/table' or its corresponding type declarations.

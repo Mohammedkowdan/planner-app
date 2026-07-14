@@ -16,15 +16,16 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import type { Program } from "@/app/programs/page"
+import type { Program } from "@/components/programs/programs-client-page"
 
 interface CreateProgramDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onCreateProgram: (program: Omit<Program, "id">) => void
+  programWallets: any[]
 }
 
-export function CreateProgramDialog({ open, onOpenChange, onCreateProgram }: CreateProgramDialogProps) {
+export function CreateProgramDialog({ open, onOpenChange, onCreateProgram, programWallets }: CreateProgramDialogProps) {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -32,19 +33,31 @@ export function CreateProgramDialog({ open, onOpenChange, onCreateProgram }: Cre
     budget: "",
     startDate: "",
     endDate: "",
-    year: "2025",
+    yearId: "",
+    programWalletId: "",
   })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    if (!formData.programWalletId) {
+      alert("يرجى اختيار حقيبة البرامج")
+      return
+    }
     onCreateProgram({
-      ...formData,
+      name: formData.name,
+      description: formData.description,
+      department: formData.department,
       budget: Number(formData.budget),
+      startDate: formData.startDate,
+      endDate: formData.endDate,
+      yearId: formData.yearId,
       spent: 0,
-      status: "planning",
       progress: 0,
       initiatives: [],
+      status: "planning",
+      programWalletId: formData.programWalletId
     })
+    // ... reset form including programWalletId
     setFormData({
       name: "",
       description: "",
@@ -52,7 +65,8 @@ export function CreateProgramDialog({ open, onOpenChange, onCreateProgram }: Cre
       budget: "",
       startDate: "",
       endDate: "",
-      year: "2025",
+      yearId: "",
+      programWalletId: "",
     })
   }
 
@@ -60,27 +74,50 @@ export function CreateProgramDialog({ open, onOpenChange, onCreateProgram }: Cre
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Create New Program</DialogTitle>
-          <DialogDescription>Add a new strategic program to your plan</DialogDescription>
+          <DialogTitle>إضافة برنامج جديد</DialogTitle>
+          <DialogDescription>أضف برنامجاً استراتيجياً جديداً وتفاصيل ميزانيته</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Program Name</Label>
+
+            <div className="space-y-2 col-span-2">
+              <Label htmlFor="wallet">حقيبة البرامج</Label>
+              <Select
+                value={formData.programWalletId}
+                onValueChange={(val) => setFormData({ ...formData, programWalletId: val })}
+                required
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="اختر حقيبة البرامج" />
+                </SelectTrigger>
+                <SelectContent>
+                  {programWallets.map(wallet => (
+                    <SelectItem key={wallet.id} value={wallet.id}>
+                      {wallet.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2 col-span-2">
+              <Label htmlFor="name">اسم البرنامج</Label>
+              {/* ... input */}
               <Input
                 id="name"
-                placeholder="e.g., Digital Health Initiative"
+                placeholder="مثال: مبادرة الصحة الرقمية"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
+            {/* ... rest of the form */}
+            <div className="space-y-2 col-span-2">
+              <Label htmlFor="description">الوصف</Label>
               <Textarea
                 id="description"
-                placeholder="Describe the program objectives and scope"
+                placeholder="وصف أهداف البرنامج ونطاقه"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 required
@@ -89,31 +126,22 @@ export function CreateProgramDialog({ open, onOpenChange, onCreateProgram }: Cre
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="department">Department</Label>
-                <Select
+                <Label htmlFor="department">القسم المسؤول</Label>
+                <Input
+                  id="department"
+                  placeholder="مثال: تقنية المعلومات"
                   value={formData.department}
-                  onValueChange={(value) => setFormData({ ...formData, department: value })}
+                  onChange={(e) => setFormData({ ...formData, department: e.target.value })}
                   required
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select department" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="IT & Digital">IT & Digital</SelectItem>
-                    <SelectItem value="Emergency Services">Emergency Services</SelectItem>
-                    <SelectItem value="Public Health">Public Health</SelectItem>
-                    <SelectItem value="Administration">Administration</SelectItem>
-                    <SelectItem value="Operations">Operations</SelectItem>
-                  </SelectContent>
-                </Select>
+                />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="budget">Budget ($)</Label>
+                <Label htmlFor="budget">الميزانية ($)</Label>
                 <Input
                   id="budget"
                   type="number"
-                  placeholder="e.g., 1000000"
+                  placeholder="مثال: 1000000"
                   value={formData.budget}
                   onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
                   required
@@ -121,7 +149,7 @@ export function CreateProgramDialog({ open, onOpenChange, onCreateProgram }: Cre
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="startDate">Start Date</Label>
+                <Label htmlFor="startDate">تاريخ البدء</Label>
                 <Input
                   id="startDate"
                   type="date"
@@ -132,7 +160,7 @@ export function CreateProgramDialog({ open, onOpenChange, onCreateProgram }: Cre
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="endDate">End Date</Label>
+                <Label htmlFor="endDate">تاريخ الانتهاء</Label>
                 <Input
                   id="endDate"
                   type="date"
@@ -145,9 +173,9 @@ export function CreateProgramDialog({ open, onOpenChange, onCreateProgram }: Cre
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
+              إلغاء
             </Button>
-            <Button type="submit">Create Program</Button>
+            <Button type="submit">إنشاء البرنامج</Button>
           </DialogFooter>
         </form>
       </DialogContent>

@@ -1,11 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { Download, FileText, TrendingUp, Target, Briefcase, DollarSign, RefreshCcw } from "lucide-react"
+import { getReportsOverviewData } from "@/actions/reports"
+import { useEffect, useState } from "react"
+import { toast } from "sonner"
 import { DashboardLayout } from "@/components/dashboard-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Download, FileText, TrendingUp, Target, Briefcase, DollarSign } from "lucide-react"
 import {
   BarChart,
   Bar,
@@ -22,34 +24,38 @@ import {
   ResponsiveContainer,
 } from "recharts"
 
-const indicatorProgressData = [
-  { name: "Q1", value: 75 },
-  { name: "Q2", value: 78 },
-  { name: "Q3", value: 82 },
-  { name: "Q4", value: 85 },
-]
-
-const programBudgetData = [
-  { name: "Digital Health", budget: 5000000, spent: 3200000 },
-  { name: "Emergency Response", budget: 2500000, spent: 1800000 },
-  { name: "Community Health", budget: 800000, spent: 200000 },
-]
-
-const categoryData = [
-  { name: "Quality", value: 8, color: "#1a508e" },
-  { name: "Efficiency", value: 6, color: "#9bc24c" },
-  { name: "Development", value: 5, color: "#5b8fc7" },
-  { name: "Financial", value: 3, color: "#b5d167" },
-  { name: "Customer", value: 2, color: "#3a6da6" },
-]
-
 export default function ReportsPage() {
   const [selectedYear, setSelectedYear] = useState("2025")
   const [selectedReport, setSelectedReport] = useState("overview")
+  const [loading, setLoading] = useState(true)
+  const [data, setData] = useState<any>(null)
+
+  useEffect(() => {
+    async function loadData() {
+      const res = await getReportsOverviewData()
+      if (res.success) {
+        setData(res.data)
+      } else {
+        toast.error(res.error || "Failed to load report data")
+      }
+      setLoading(false)
+    }
+    loadData()
+  }, [])
 
   const handleExport = (format: string) => {
     console.log(`Exporting ${selectedReport} report as ${format}`)
     alert(`تصدير التقرير بصيغة ${format.toUpperCase()}`)
+  }
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-[60vh]">
+          <RefreshCcw className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      </DashboardLayout>
+    )
   }
 
   return (
@@ -106,9 +112,9 @@ export default function ReportsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">24</div>
+              <div className="text-2xl font-bold">{data?.indicatorCount || 0}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                <span className="text-success font-medium">85%</span> على المسار الصحيح
+                <span className="text-emerald-500 font-medium">{(data?.indicatorSuccessRate || 0).toFixed(0)}%</span> على المسار الصحيح
               </p>
             </CardContent>
           </Card>
@@ -121,9 +127,9 @@ export default function ReportsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">12</div>
+              <div className="text-2xl font-bold">{data?.programCount || 0}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                <span className="text-warning font-medium">3</span> تحتاج إلى اهتمام
+                <span className="text-primary font-medium">{data?.activityCount || 0}</span> نشاط مسجل
               </p>
             </CardContent>
           </Card>
@@ -136,9 +142,9 @@ export default function ReportsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">8.3 مليون $</div>
+              <div className="text-2xl font-bold">{data?.totalBudget?.toLocaleString()}$</div>
               <p className="text-xs text-muted-foreground mt-1">
-                <span className="text-primary font-medium">5.2 مليون $</span> تم إنفاقها
+                <span className="text-primary font-medium">{data?.totalSpent?.toLocaleString()}$</span> تم إنفاقها
               </p>
             </CardContent>
           </Card>
@@ -151,9 +157,9 @@ export default function ReportsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">68%</div>
+              <div className="text-2xl font-bold">{data?.annualReportCount || 0}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                <span className="text-success font-medium">+12%</span> مقارنة بالربع السابق
+                <span className="text-emerald-500 font-medium">تقارير سنوية</span> معتمدة
               </p>
             </CardContent>
           </Card>
@@ -167,7 +173,7 @@ export default function ReportsPage() {
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={indicatorProgressData}>
+                <LineChart data={data?.charts?.indicatorProgressData || []}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
                   <YAxis />
@@ -188,16 +194,16 @@ export default function ReportsPage() {
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
-                    data={categoryData}
+                    data={data?.charts?.categoryData || []}
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    label={({ name, percent }: any) => `${name} ${(percent * 100).toFixed(0)}%`}
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"
                   >
-                    {categoryData.map((entry, index) => (
+                    {(data?.charts?.categoryData || []).map((entry: any, index: number) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
@@ -214,7 +220,7 @@ export default function ReportsPage() {
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={programBudgetData}>
+                <BarChart data={data?.charts?.programBudgetData || []}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
                   <YAxis />
@@ -238,44 +244,9 @@ export default function ReportsPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {[
-                {
-                  action: "تم تحديث",
-                  item: "مؤشر معدل رضا المرضى",
-                  user: "المسؤول",
-                  date: "منذ ساعتين",
-                },
-                {
-                  action: "تم إنشاء",
-                  item: "برنامج مبادرة الصحة الرقمية",
-                  user: "المسؤول",
-                  date: "منذ 5 ساعات",
-                },
-                {
-                  action: "تم إكمال",
-                  item: "تقرير الربع الثالث للاستجابة للطوارئ",
-                  user: "المدير",
-                  date: "منذ يوم واحد",
-                },
-                {
-                  action: "تم تعديل",
-                  item: "تخصيص الميزانية للصحة المجتمعية",
-                  user: "المالية",
-                  date: "منذ يومين",
-                },
-              ].map((activity, index) => (
-                <div key={index} className="flex items-start gap-3 p-3 rounded-md bg-muted/50">
-                  <div className="w-2 h-2 rounded-full bg-primary mt-2" />
-                  <div className="flex-1">
-                    <p className="text-sm">
-                      <span className="font-semibold">{activity.action}</span> {activity.item}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      بواسطة {activity.user} • {activity.date}
-                    </p>
-                  </div>
-                </div>
-              ))}
+              <p className="text-sm text-muted-foreground text-center py-8">
+                تحقق من الصفحة الرئيسية لمشاهدة سجل النشاطات الكامل.
+              </p>
             </div>
           </CardContent>
         </Card>

@@ -2,18 +2,19 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, Calendar, Target, Briefcase, FileText, Settings, ChevronLeft, Menu } from "lucide-react"
+import { LayoutDashboard, Calendar, Target, Briefcase, FileText, Settings, ChevronLeft, Menu, FileBarChart2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
 
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Planning Years", href: "/planning-years", icon: Calendar },
-  { name: "Indicators Plan", href: "/indicators", icon: Target },
-  { name: "Programs Plan", href: "/programs", icon: Briefcase },
-  { name: "Reports", href: "/reports", icon: FileText },
-  { name: "Settings", href: "/settings", icon: Settings },
+  { name: "لوحة التحكم", href: "/dashboard", icon: LayoutDashboard },
+  { name: "سنوات التخطيط", href: "/planning-years", icon: Calendar },
+  { name: "خطة المؤشرات", href: "/indicators", icon: Target },
+  { name: "خطة البرامج", href: "/programs", icon: Briefcase },
+  { name: "التقارير السنوية", href: "/annual-reports", icon: FileBarChart2 },
+  { name: "التقارير", href: "/reports", icon: FileText },
+  { name: "الإعدادات", href: "/settings", icon: Settings },
 ]
 
 export function Sidebar() {
@@ -35,7 +36,7 @@ export function Sidebar() {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sidebar-primary">
                 <Target className="h-5 w-5 text-sidebar-primary-foreground" />
               </div>
-              <span className="text-lg font-semibold">Planning System</span>
+              <span className="text-lg font-semibold">نظام التخطيط</span>
             </div>
           )}
           <Button
@@ -79,7 +80,7 @@ export function Sidebar() {
             </div>
             {!collapsed && (
               <div className="flex-1 overflow-hidden">
-                <p className="truncate text-sm font-medium">Admin User</p>
+                <p className="truncate text-sm font-medium">مدير النظام</p>
                 <p className="truncate text-xs text-muted-foreground">admin@example.com</p>
               </div>
             )}

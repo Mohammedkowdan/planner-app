@@ -1,0 +1,15 @@
+﻿app/dashboard/[yearId]/page.tsx(28,56): error TS2367: This comparison appears to be unintentional because the types 'ProgressStatus' and '"completed"' have no overlap.
+app/dashboard/[yearId]/page.tsx(29,52): error TS2367: This comparison appears to be unintentional because the types 'ProgressStatus' and '"completed"' have no overlap.
+app/dashboard/[yearId]/page.tsx(33,49): error TS2367: This comparison appears to be unintentional because the types 'ProgressStatus' and '"completed"' have no overlap.
+app/dashboard/[yearId]/page.tsx(33,105): error TS2367: This comparison appears to be unintentional because the types 'ProgressStatus' and '"completed"' have no overlap.
+app/dashboard/page.tsx(22,34): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+app/timeline/page.tsx(399,9): error TS2322: Type '(activity: Omit<Activity, "id" | "visible">) => void' is not assignable to type '(activity: Activity) => void'.
+  Types of parameters 'activity' and 'activity' are incompatible.
+    Property 'color' is missing in type 'Activity' but required in type 'Omit<Activity, "id" | "visible">'.
+components/programs/programs-client-page.tsx(90,13): error TS2353: Object literal may only specify known properties, and 'organizationId' does not exist in type 'ProgramData'.
+components/programs/programs-client-page.tsx(114,63): error TS2345: Argument of type 'Program' is not assignable to parameter of type 'Partial<ProgramData>'.
+  Types of property 'programWalletId' are incompatible.
+    Type 'string | null | undefined' is not assignable to type 'string | undefined'.
+      Type 'null' is not assignable to type 'string | undefined'.
+tmp/list_users.ts(1,30): error TS2307: Cannot find module '../generated/prisma' or its corresponding type declarations.
+tmp/reset_password.ts(1,30): error TS2307: Cannot find module '../generated/prisma' or its corresponding type declarations.

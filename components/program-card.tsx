@@ -3,8 +3,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Pencil, Trash2, DollarSign, Calendar, CheckCircle2, Circle, Clock } from "lucide-react"
-import type { Program } from "@/app/programs/page"
+import { Progress } from "@/components/ui/progress"
+import { Pencil, Trash2, Calendar, Target, DollarSign, Wallet, CheckCircle2, Circle, Clock } from "lucide-react"
+import type { Program, Initiative } from "@/components/programs/programs-client-page"
 
 interface ProgramCardProps {
   program: Program
@@ -83,9 +84,8 @@ export function ProgramCard({ program, onEdit, onDelete }: ProgramCardProps) {
               </div>
               <div className="w-full bg-muted rounded-full h-2">
                 <div
-                  className={`h-2 rounded-full transition-all ${
-                    budgetPercentage > 90 ? "bg-destructive" : "bg-secondary"
-                  }`}
+                  className={`h-2 rounded-full transition-all ${budgetPercentage > 90 ? "bg-destructive" : "bg-secondary"
+                    }`}
                   style={{ width: `${Math.min(budgetPercentage, 100)}%` }}
                 />
               </div>

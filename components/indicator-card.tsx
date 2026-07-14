@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Pencil, Trash2, TrendingUp, TrendingDown, Minus } from "lucide-react"
-import type { Indicator } from "@/app/indicators/page"
+import type { Indicator } from "@/components/indicators/indicators-client-page"
 
 interface IndicatorCardProps {
   indicator: Indicator
